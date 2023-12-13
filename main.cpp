@@ -9,12 +9,12 @@ int main()
     b.Insert(20);
     b.Insert(1);
     b.Insert(15);
-    //b.Remove(10);
-    
-    std::cout << b.Search(10) << std::endl;
+    // b.Remove(10);
 
-    /*
+    std::cout << b.Search(15) << std::endl;
+
     auto inorder = b.InOrder();
+    /*
     auto postorder = b.PostOrder();
     auto preorder = b.PreOrder();
 

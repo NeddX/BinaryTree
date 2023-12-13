@@ -1,6 +1,7 @@
 #ifndef MY_BINARY_TREE_H
 #define MY_BINARY_TREE_H
 
+#include <vector>
 #include <initializer_list>
 #include <cstdint>
 
@@ -49,6 +50,7 @@ namespace my {
         void Insert(const T& val);
         void Remove(const T& val);
         bool Search(const T& val);
+		std::vector<T> InOrder();	
     };
 } // namespace my
 
