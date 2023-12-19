@@ -13,7 +13,10 @@ int main()
 
     std::cout << b.Search(15) << std::endl;
 
-    auto inorder = b.InOrder();
+    auto in_order = b.InOrder();
+    for (const auto& e : in_order)
+        std::cout << e << ' ';  
+    std::cout << std::endl;
     /*
     auto postorder = b.PostOrder();
     auto preorder = b.PreOrder();

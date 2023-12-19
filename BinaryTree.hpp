@@ -65,6 +65,7 @@ namespace my {
                     if (!current->left)
                     {
                         current->left = new Node(val);
+                        ++m_Count;
                         break;
                     }
                     else
@@ -75,6 +76,7 @@ namespace my {
                     if (!current->right)
                     {
                         current->right = new Node(val);
+                        ++m_Count;
                         break;
                     }
                     else
@@ -103,6 +105,24 @@ namespace my {
                 ptr = ptr->right;
         }
         return false;
+    }
+
+    template<typename T>
+    std::vector<T> BinaryTree<T>::InOrder()
+    {
+        std::vector<T> vec;
+        static std::function<void(Node*)> recv = [&](Node* ptr)
+        {
+            if (ptr->left)
+                recv(ptr->left);
+            else if (ptr->right)
+                recv(ptr->right);
+            vec.emplace_back(ptr->val);
+        };
+
+        vec.reserve(m_Count);
+        recv(m_Root);
+        return vec;
     }
 } // namespace my
 

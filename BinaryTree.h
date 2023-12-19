@@ -36,6 +36,7 @@ namespace my {
 
     private:
         Node* m_Root = nullptr;
+        usize m_Count = 0;
 
 
     public:
