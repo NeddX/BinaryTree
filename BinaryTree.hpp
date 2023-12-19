@@ -92,7 +92,7 @@ namespace my {
     }
 
     template <typename T>
-    bool BinaryTree<T>::Search(const T& val)
+    bool BinaryTree<T>::Search(const T& val) const noexcept
     {
         auto* ptr = m_Root;
         while (ptr)
@@ -107,22 +107,98 @@ namespace my {
         return false;
     }
 
-    template<typename T>
-    std::vector<T> BinaryTree<T>::InOrder()
+    template <typename T>
+    std::vector<T> BinaryTree<T>::InOrder() const noexcept
     {
-        std::vector<T> vec;
+        std::vector<T>                    vec;
         static std::function<void(Node*)> recv = [&](Node* ptr)
         {
             if (ptr->left)
                 recv(ptr->left);
-            else if (ptr->right)
+
+            vec.push_back(ptr->val);
+
+            if (ptr->right)
                 recv(ptr->right);
-            vec.emplace_back(ptr->val);
         };
 
         vec.reserve(m_Count);
         recv(m_Root);
         return vec;
+    }
+
+    template <typename T>
+    std::vector<T> BinaryTree<T>::PostOrder() const noexcept
+    {
+        std::vector<T>                    vec;
+        static std::function<void(Node*)> recv = [&](Node* ptr)
+        {
+            if (ptr->left)
+                recv(ptr->left);
+
+            if (ptr->right)
+                recv(ptr->right);
+
+            vec.push_back(ptr->val);
+        };
+
+        vec.reserve(m_Count);
+        recv(m_Root);
+        return vec;
+    }
+
+    template <typename T>
+    std::vector<T> BinaryTree<T>::PreOrder() const noexcept
+    {
+        std::vector<T>                    vec;
+        static std::function<void(Node*)> recv = [&](Node* ptr)
+        {
+            vec.push_back(ptr->val);
+
+            if (ptr->left)
+                recv(ptr->left);
+
+            if (ptr->right)
+                recv(ptr->right);
+        };
+
+        vec.reserve(m_Count);
+        recv(m_Root);
+        return vec;
+    }
+
+    template <typename T>
+    T BinaryTree<T>::FindMax() const noexcept
+    {
+        auto* current = m_Root;
+        while (current->right)
+            current = current->right;
+        return current->val;
+    }
+
+    template <typename T>
+    T BinaryTree<T>::FindMin() const noexcept
+    {
+        auto* current = m_Root;
+        while (current->left)
+            current = current->left;
+        return current->val;
+    }
+
+    template <typename T>
+    usize BinaryTree<T>::Height() const noexcept
+    {
+        usize                             height = 0;
+        static std::function<void(Node*)> recv   = [&](Node* ptr)
+        {
+            ++height;
+            if (ptr->left)
+                recv(ptr->left);
+            if (ptr->right)
+                recv(ptr->right);
+        };
+        recv(m_Root);
+        return height;
     }
 } // namespace my
 
