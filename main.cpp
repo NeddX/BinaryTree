@@ -4,7 +4,7 @@
 
 int main()
 {
-    my::BinaryTree<int> b{ 20, 1, 0, 30, 25, 40, 24 };
+    my::BinaryTree<int> b{10, 8,2,1,3,4,5,6,7,18,12,13,22,21,24,20};
     // b.Remove(10);
 
     std::cout << b.Search(15) << std::endl;

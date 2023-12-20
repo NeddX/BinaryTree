@@ -89,6 +89,57 @@ namespace my {
     template <typename T>
     void BinaryTree<T>::Remove(const T& val)
     {
+        bool found = false;
+        auto* current = m_Root;
+        auto* prev = current;
+        while (current)
+        {
+            prev = current;
+            if (current->val == val)
+                found = true;
+            else if (current->val > val)
+                current = current->left;
+            else
+                current = current->right;
+        }
+
+        if (!found) return;
+
+        if (!current->right)
+        {
+            if (current->left)
+            {
+                if (prev->left == current)
+                    prev->left = current->left;
+                else
+                    prev->right = current->right;
+
+                delete current;
+                return;
+            }
+            else // Leaf
+            {
+                if (prev->left == current)
+                    prev->left = nullptr;
+                else
+
+                    prev->right = nullptr;
+                delete current;
+                return;
+            }
+        }
+        else
+        {
+            // The mindblowing logic goes here
+            auto* current2 = current->right;
+            while (current2->left)
+                current2 = current2->left;
+            
+            if (prev->left == current)
+                prev->left = current2;
+            else
+                prev->right = current2;
+        }
     }
 
     template <typename T>
@@ -189,16 +240,21 @@ namespace my {
     usize BinaryTree<T>::Height() const noexcept
     {
         usize                             height = 0;
-        static std::function<void(Node*)> recv   = [&](Node* ptr)
+	    usize                             max = 0;
+        std::function<void(Node*)> recv   = [&](Node* ptr)
         {
-            ++height;
+	        ++height;	
             if (ptr->left)
                 recv(ptr->left);
             if (ptr->right)
                 recv(ptr->right);
+
+	        if (max < height)
+		        max = height;
+            --height;
         };
         recv(m_Root);
-        return height;
+        return max;
     }
 } // namespace my
 
