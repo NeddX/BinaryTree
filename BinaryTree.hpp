@@ -267,50 +267,56 @@ namespace my {
     const T& BinaryTree<T>::Successor(const T& val) const
     {
         auto* current = m_Root;
+        Node* ancestor = nullptr;
         while (current)
         {
             if (current->val == val)
-                break;
+            {
+                if (!ancestor && !current->right)
+                    return current->val;
+                else if (!current->right)
+                    return ancestor->val;
+                else
+                    return current->right->val;
+            }
+            else if (current->val > val)
+                    ancestor = current;
 
             if (current->val > val)
-                current = current->right;
-            else
                 current = current->left;
+            else
+                current = current->right;
         }
 
-        if (!current)
-            throw std::invalid_argument("Value does not exist in the Binary Tree");
-
-        if (current->right)
-            return current->right->val;
-        else
-        {
-            
-        }
+        throw std::invalid_argument("Value does not exist.");
     }
 
     template <typename T>
     const T& BinaryTree<T>::Predecessor(const T& val) const
     {
         auto* current = m_Root;
+        Node* ancestor = nullptr;
         while (current)
         {
             if (current->val == val)
-                break;
+            {
+                if (!ancestor && !current->left)
+                    return current->val;
+                else if (!current->left)
+                    return ancestor->val;
+                else
+                    return current->left->val;
+            }
+            else if (current->val < val)
+                    ancestor = current;
 
             if (current->val > val)
-                current = current->right;
-            else
                 current = current->left;
+            else
+                current = current->right;
         }
 
-        if (!current)
-            throw std::invalid_argument("Value does not exist in the Binary Tree");
-
-        if (current->left)
-            return current->left->val;
-        else
-            return val;
+        throw std::invalid_argument("Value does not exist.");
     }
 } // namespace my
 
