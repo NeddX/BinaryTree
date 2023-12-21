@@ -256,6 +256,62 @@ namespace my {
         recv(m_Root);
         return max;
     }
+
+    template <typename T>
+    std::vector<T> BinaryTree<T>::Serialize() const noexcept
+    {
+        return InOrder();   
+    }
+
+    template <typename T>
+    const T& BinaryTree<T>::Successor(const T& val) const
+    {
+        auto* current = m_Root;
+        while (current)
+        {
+            if (current->val == val)
+                break;
+
+            if (current->val > val)
+                current = current->right;
+            else
+                current = current->left;
+        }
+
+        if (!current)
+            throw std::invalid_argument("Value does not exist in the Binary Tree");
+
+        if (current->right)
+            return current->right->val;
+        else
+        {
+            
+        }
+    }
+
+    template <typename T>
+    const T& BinaryTree<T>::Predecessor(const T& val) const
+    {
+        auto* current = m_Root;
+        while (current)
+        {
+            if (current->val == val)
+                break;
+
+            if (current->val > val)
+                current = current->right;
+            else
+                current = current->left;
+        }
+
+        if (!current)
+            throw std::invalid_argument("Value does not exist in the Binary Tree");
+
+        if (current->left)
+            return current->left->val;
+        else
+            return val;
+    }
 } // namespace my
 
 #endif // MY_BINARY_TREE_IMPL_H

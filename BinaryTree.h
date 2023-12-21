@@ -3,6 +3,7 @@
 
 #include <cstdint>
 #include <initializer_list>
+#include <exception>
 #include <vector>
 
 using u8      = std::uint8_t;
@@ -47,6 +48,10 @@ namespace my {
         inline void Drop(const bool destructing = false);
 
     public:
+        constexpr usize Size() const noexcept { return m_Count;  }
+        constexpr void Clear() { Drop(); }
+
+    public:
         void           Insert(const T& val);
         void           Remove(const T& val);
         bool           Search(const T& val) const noexcept;
@@ -56,6 +61,9 @@ namespace my {
         T              FindMax() const noexcept;
         T              FindMin() const noexcept;
         usize          Height() const noexcept;
+        std::vector<T> Serialize() const noexcept;
+        const T&       Successor(const T& val) const;
+        const T&       Predecessor(const T& val) const;
     };
 } // namespace my
 
