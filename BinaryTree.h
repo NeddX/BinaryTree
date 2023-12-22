@@ -2,8 +2,8 @@
 #define MY_BINARY_TREE_H
 
 #include <cstdint>
-#include <initializer_list>
 #include <exception>
+#include <initializer_list>
 #include <vector>
 
 using u8      = std::uint8_t;
@@ -54,8 +54,8 @@ namespace my {
         inline void Drop(const bool destructing = false);
 
     public:
-        constexpr usize Size() const noexcept { return m_Count;  }
-        constexpr void Clear() { Drop(); }
+        constexpr usize Size() const noexcept { return m_Count; }
+        constexpr void  Clear() { Drop(); }
 
     public:
         void           Insert(const T& val);
@@ -64,6 +64,7 @@ namespace my {
         std::vector<T> InOrder() const noexcept;
         std::vector<T> PostOrder() const noexcept;
         std::vector<T> PreOrder() const noexcept;
+        std::vector<T> LevelOrder() const noexcept;
         T              FindMax() const noexcept;
         T              FindMin() const noexcept;
         usize          Height() const noexcept;

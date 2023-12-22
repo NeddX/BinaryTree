@@ -1,2 +1,4 @@
 app
 a.out
+*.dSYM
+*.swp

@@ -2,6 +2,7 @@
 #define MY_BINARY_TREE_IMPL_H
 
 #include <functional>
+#include <queue>
 #include <type_traits>
 
 namespace my {
@@ -28,7 +29,7 @@ namespace my {
     {
         if (other.m_Root)
         {
-            std::function<void(Node*,Node*&)> recv = [&](Node* ptr, Node*& root)
+            std::function<void(Node*, Node*&)> recv = [&](Node* ptr, Node*& root)
             {
                 root = new Node(ptr->val);
                 if (ptr->left)
@@ -46,9 +47,9 @@ namespace my {
     {
         if (other.m_Root)
         {
-            m_Root = other.m_Root;
-            m_Count = other.m_Count;
-            other.m_Root = nullptr;
+            m_Root        = other.m_Root;
+            m_Count       = other.m_Count;
+            other.m_Root  = nullptr;
             other.m_Count = 0;
         }
     }
@@ -70,7 +71,7 @@ namespace my {
 
         if (other.m_Root)
         {
-            std::function<void(Node*,Node*&)> recv = [&](Node* ptr, Node*& root)
+            std::function<void(Node*, Node*&)> recv = [&](Node* ptr, Node*& root)
             {
                 root = new Node(ptr->val);
                 if (ptr->left)
@@ -96,9 +97,9 @@ namespace my {
 
         if (other.m_Root)
         {
-            m_Root = other.m_Root;
-            m_Count = other.m_Count;
-            other.m_Root = nullptr;
+            m_Root        = other.m_Root;
+            m_Count       = other.m_Count;
+            other.m_Root  = nullptr;
             other.m_Count = 0;
         }
 
@@ -165,9 +166,9 @@ namespace my {
     template <typename T>
     void BinaryTree<T>::Remove(const T& val)
     {
-        bool found = false;
+        bool  found   = false;
         auto* current = m_Root;
-        auto* prev = current;
+        auto* prev    = current;
         while (current)
         {
             prev = current;
@@ -179,7 +180,21 @@ namespace my {
                 current = current->right;
         }
 
-        if (!found) return;
+        if (current == m_Root)
+        {
+            auto* current2 = current->right;
+            while (current2->left)
+                current2 = current2->left;
+
+            m_Root        = current2;
+            m_Root->right = current->right;
+
+            delete current;
+            return;
+        }
+
+        if (!found)
+            return;
 
         if (!current->right)
         {
@@ -210,11 +225,16 @@ namespace my {
             auto* current2 = current->right;
             while (current2->left)
                 current2 = current2->left;
-            
+
             if (prev->left == current)
                 prev->left = current2;
             else
                 prev->right = current2;
+
+            current2->left = current->right;
+
+            delete current;
+            return;
         }
     }
 
@@ -237,7 +257,7 @@ namespace my {
     template <typename T>
     std::vector<T> BinaryTree<T>::InOrder() const noexcept
     {
-        std::vector<T>                    vec;
+        std::vector<T>             vec;
         std::function<void(Node*)> recv = [&](Node* ptr)
         {
             if (ptr->left)
@@ -257,7 +277,7 @@ namespace my {
     template <typename T>
     std::vector<T> BinaryTree<T>::PostOrder() const noexcept
     {
-        std::vector<T>                    vec;
+        std::vector<T>             vec;
         std::function<void(Node*)> recv = [&](Node* ptr)
         {
             if (ptr->left)
@@ -275,9 +295,28 @@ namespace my {
     }
 
     template <typename T>
+    std::vector<T> BinaryTree<T>::LevelOrder() const noexcept
+    {
+        std::vector<T>    vec;
+        std::queue<Node*> queue;
+        queue.push(m_Root);
+        while (!queue.empty())
+        {
+            auto* current = queue.front();
+            if (current->left)
+                queue.push(current->left);
+            if (current->right)
+                queue.push(current->right);
+            vec.emplace_back(current->val);
+            queue.pop();
+        }
+        return vec;
+    }
+
+    template <typename T>
     std::vector<T> BinaryTree<T>::PreOrder() const noexcept
     {
-        std::vector<T>                    vec;
+        std::vector<T>             vec;
         std::function<void(Node*)> recv = [&](Node* ptr)
         {
             vec.push_back(ptr->val);
@@ -315,18 +354,18 @@ namespace my {
     template <typename T>
     usize BinaryTree<T>::Height() const noexcept
     {
-        usize                             height = 0;
-	    usize                             max = 0;
+        usize                      height = 0;
+        usize                      max    = 0;
         std::function<void(Node*)> recv   = [&](Node* ptr)
         {
-	        ++height;	
+            ++height;
             if (ptr->left)
                 recv(ptr->left);
             if (ptr->right)
                 recv(ptr->right);
 
-	        if (max < height)
-		        max = height;
+            if (max < height)
+                max = height;
             --height;
         };
         recv(m_Root);
@@ -336,13 +375,13 @@ namespace my {
     template <typename T>
     std::vector<T> BinaryTree<T>::Serialize() const noexcept
     {
-        return InOrder();   
+        return InOrder();
     }
 
     template <typename T>
     const T& BinaryTree<T>::Successor(const T& val) const
     {
-        auto* current = m_Root;
+        auto* current  = m_Root;
         Node* ancestor = nullptr;
         while (current)
         {
@@ -356,7 +395,7 @@ namespace my {
                     return current->right->val;
             }
             else if (current->val > val)
-                    ancestor = current;
+                ancestor = current;
 
             if (current->val > val)
                 current = current->left;
@@ -370,7 +409,7 @@ namespace my {
     template <typename T>
     const T& BinaryTree<T>::Predecessor(const T& val) const
     {
-        auto* current = m_Root;
+        auto* current  = m_Root;
         Node* ancestor = nullptr;
         while (current)
         {
@@ -384,7 +423,7 @@ namespace my {
                     return current->left->val;
             }
             else if (current->val < val)
-                    ancestor = current;
+                ancestor = current;
 
             if (current->val > val)
                 current = current->left;
@@ -398,7 +437,10 @@ namespace my {
     template <typename T>
     std::vector<T> BinaryTree<T>::RangeQuery(const T& begin, const T& end) const
     {
-        std::vector<T> vec;
+        if (begin > end)
+            return {};
+
+        std::vector<T>                   vec;
         const std::function<void(Node*)> recv = [&](Node* ptr)
         {
             if (ptr->val > begin && ptr->val < end)
