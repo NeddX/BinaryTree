@@ -24,15 +24,91 @@ namespace my {
     }
 
     template <typename T>
+    BinaryTree<T>::BinaryTree(const BinaryTree<T>& other)
+    {
+        if (other.m_Root)
+        {
+            std::function<void(Node*,Node*&)> recv = [&](Node* ptr, Node*& root)
+            {
+                root = new Node(ptr->val);
+                if (ptr->left)
+                    recv(ptr->left, root->left);
+                if (ptr->right)
+                    recv(ptr->right, root->right);
+            };
+            recv(other.m_Root, m_Root);
+            m_Count = other.m_Count;
+        }
+    }
+
+    template <typename T>
+    BinaryTree<T>::BinaryTree(BinaryTree<T>&& other) noexcept
+    {
+        if (other.m_Root)
+        {
+            m_Root = other.m_Root;
+            m_Count = other.m_Count;
+            other.m_Root = nullptr;
+            other.m_Count = 0;
+        }
+    }
+
+    template <typename T>
     BinaryTree<T>::~BinaryTree()
     {
         Drop(true);
     }
 
     template <typename T>
+    BinaryTree<T>& BinaryTree<T>::operator=(const BinaryTree<T>& other) const
+    {
+        if (this == &other)
+            return *this;
+
+        if (m_Root)
+            Drop();
+
+        if (other.m_Root)
+        {
+            std::function<void(Node*,Node*&)> recv = [&](Node* ptr, Node*& root)
+            {
+                root = new Node(ptr->val);
+                if (ptr->left)
+                    recv(ptr->left, root->left);
+                if (ptr->right)
+                    recv(ptr->right, root->right);
+            };
+            recv(other.m_Root, m_Root);
+            m_Count = other.m_Count;
+        }
+
+        return *this;
+    }
+
+    template <typename T>
+    BinaryTree<T>& BinaryTree<T>::operator=(BinaryTree<T>&& other) noexcept
+    {
+        if (this == &other)
+            return *this;
+
+        if (m_Root)
+            Drop();
+
+        if (other.m_Root)
+        {
+            m_Root = other.m_Root;
+            m_Count = other.m_Count;
+            other.m_Root = nullptr;
+            other.m_Count = 0;
+        }
+
+        return *this;
+    }
+
+    template <typename T>
     inline void BinaryTree<T>::Drop(const bool destructing)
     {
-        static std::function<void(Node*)> recv = [&](Node* ptr)
+        std::function<void(Node*)> recv = [&](Node* ptr)
         {
             if (ptr->left)
                 recv(ptr->left);
@@ -162,7 +238,7 @@ namespace my {
     std::vector<T> BinaryTree<T>::InOrder() const noexcept
     {
         std::vector<T>                    vec;
-        static std::function<void(Node*)> recv = [&](Node* ptr)
+        std::function<void(Node*)> recv = [&](Node* ptr)
         {
             if (ptr->left)
                 recv(ptr->left);
@@ -182,7 +258,7 @@ namespace my {
     std::vector<T> BinaryTree<T>::PostOrder() const noexcept
     {
         std::vector<T>                    vec;
-        static std::function<void(Node*)> recv = [&](Node* ptr)
+        std::function<void(Node*)> recv = [&](Node* ptr)
         {
             if (ptr->left)
                 recv(ptr->left);
@@ -202,7 +278,7 @@ namespace my {
     std::vector<T> BinaryTree<T>::PreOrder() const noexcept
     {
         std::vector<T>                    vec;
-        static std::function<void(Node*)> recv = [&](Node* ptr)
+        std::function<void(Node*)> recv = [&](Node* ptr)
         {
             vec.push_back(ptr->val);
 
@@ -317,6 +393,38 @@ namespace my {
         }
 
         throw std::invalid_argument("Value does not exist.");
+    }
+
+    template <typename T>
+    std::vector<T> BinaryTree<T>::RangeQuery(const T& begin, const T& end) const
+    {
+        std::vector<T> vec;
+        const std::function<void(Node*)> recv = [&](Node* ptr)
+        {
+            if (ptr->val > begin && ptr->val < end)
+            {
+                vec.emplace_back(ptr->val);
+                if (ptr->left)
+                    recv(ptr->left);
+                if (ptr->right)
+                    recv(ptr->right);
+            }
+            else
+            {
+                if (ptr->val < begin)
+                {
+                    if (ptr->right)
+                        recv(ptr->right);
+                }
+                else if (ptr->val > end)
+                {
+                    if (ptr->left)
+                        recv(ptr->left);
+                }
+            }
+        };
+        recv(m_Root);
+        return vec;
     }
 } // namespace my
 

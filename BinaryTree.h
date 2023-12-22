@@ -42,7 +42,13 @@ namespace my {
     public:
         BinaryTree();
         BinaryTree(const std::initializer_list<T> list);
+        BinaryTree(const BinaryTree<T>& other);
+        BinaryTree(BinaryTree<T>&& other) noexcept;
         ~BinaryTree();
+
+    public:
+        BinaryTree<T>& operator=(const BinaryTree<T>& other) const;
+        BinaryTree<T>& operator=(BinaryTree<T>&& other) noexcept;
 
     private:
         inline void Drop(const bool destructing = false);
@@ -64,6 +70,7 @@ namespace my {
         std::vector<T> Serialize() const noexcept;
         const T&       Successor(const T& val) const;
         const T&       Predecessor(const T& val) const;
+        std::vector<T> RangeQuery(const T& begin, const T& end) const;
     };
 } // namespace my
 
